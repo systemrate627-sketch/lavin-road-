@@ -944,7 +944,7 @@
             toast.style.color = isError ? '#fff' : '#000';
             document.getElementById('toastMsg').innerText = msg;
             toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 2800);
+            setTimeout(() => toast.classList.remove('show'), 6000);
         };
 
         function saveLocalData() {
@@ -1649,7 +1649,7 @@
                 showToast(rawId ? 'آیتم در Supabase و منوی مشتری بروزرسانی شد.' : 'آیتم جدید در Supabase ثبت و به مشتری ارسال شد.');
             } else {
                 console.error('Supabase upsert error:', error);
-                showToast('ذخیره محلی انجام شد اما خطای Supabase رخ داد.', true);
+                showToast('خطای Supabase: ' + (error.message || JSON.stringify(error)), true);
             }
         };
 
@@ -1668,7 +1668,7 @@
                         showToast('آیتم از Supabase و منوی مشتری حذف شد.', true);
                     } else {
                         console.error('Supabase delete error:', error);
-                        showToast('خطا در حذف از Supabase', true);
+                        showToast('خطای حذف Supabase: ' + (error.message || JSON.stringify(error)), true);
                     }
                 }
             });

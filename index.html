@@ -1,0 +1,1726 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>پنل مدیریت جامع کافه لاوین | Lavin Cafe Admin</title>
+
+    <!-- Vazirmatn Font -->
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" />
+    
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- html2pdf Library for PDF Generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <style>
+        :root {
+            --bg-main: #070a12;
+            --bg-card: rgba(15, 23, 42, 0.88);
+            --border-card: rgba(255, 255, 255, 0.08);
+            --neon-amber: #f59e0b;
+            --neon-cyan: #06b6d4;
+            --neon-green: #10b981;
+            --neon-rose: #f43f5e;
+            --neon-purple: #8b5cf6;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Vazirmatn', sans-serif; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg-main); }
+        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.15); border-radius: 4px; }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding-bottom: 50px;
+            overflow-x: hidden;
+        }
+
+        .glass-header {
+            background: rgba(10, 15, 28, 0.94);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-card);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            padding: 14px 28px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .header-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .container { max-width: 1600px; margin: 0 auto; padding: 24px; }
+
+        .glass-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border-card);
+            border-radius: 16px;
+            padding: 20px;
+            transition: all 0.25s ease;
+        }
+
+        .grid-kpi {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .btn {
+            padding: 9px 16px;
+            border-radius: 12px;
+            border: none;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: 0.2s;
+            white-space: nowrap;
+        }
+
+        .btn-primary { background: linear-gradient(135deg, var(--neon-amber), #d97706); color: #000; }
+        .btn-primary:hover { box-shadow: 0 0 15px rgba(245, 158, 11, 0.4); }
+        .btn-secondary { background: rgba(255, 255, 255, 0.05); color: var(--text-main); border: 1px solid var(--border-card); }
+        .btn-secondary:hover { background: rgba(255, 255, 255, 0.12); }
+        .btn-danger { background: rgba(244, 63, 94, 0.18); color: var(--neon-rose); border: 1px solid rgba(244, 63, 94, 0.4); }
+        .btn-danger:hover { background: var(--neon-rose); color: #fff; }
+        .btn-green { background: rgba(16, 185, 129, 0.18); color: var(--neon-green); border: 1px solid rgba(16, 185, 129, 0.4); }
+        .btn-green:hover { background: var(--neon-green); color: #000; }
+
+        .stepper-control {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 3px 8px;
+            border-radius: 8px;
+            border: 1px solid var(--border-card);
+        }
+
+        .stepper-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: #fff;
+            width: 22px;
+            height: 22px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            transition: 0.15s;
+        }
+
+        .stepper-btn:hover { background: var(--neon-amber); color: #000; }
+
+        .nav-switcher {
+            display: flex;
+            gap: 6px;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 4px;
+            border-radius: 12px;
+            border: 1px solid var(--border-card);
+            overflow-x: auto;
+            max-width: 100%;
+        }
+
+        .nav-btn {
+            padding: 8px 14px;
+            border-radius: 9px;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+
+        .nav-btn.active {
+            background: var(--neon-amber);
+            color: #000;
+            box-shadow: 0 0 12px rgba(245, 158, 11, 0.4);
+        }
+
+        .view-section { display: none; }
+        .view-section.active { display: block; }
+
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            border-radius: 16px;
+            border: 1px solid var(--border-card);
+            background: var(--bg-card);
+        }
+
+        .custom-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: right;
+            font-size: 13px;
+        }
+
+        .custom-table th {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 14px 16px;
+            color: var(--neon-amber);
+            font-weight: 800;
+            border-bottom: 1px solid var(--border-card);
+            white-space: nowrap;
+        }
+
+        .custom-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            color: var(--text-main);
+            vertical-align: middle;
+            white-space: nowrap;
+        }
+
+        .custom-table tr:hover { background: rgba(255, 255, 255, 0.025); }
+
+        .badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(14px);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+        .modal.active { display: flex; }
+        .modal-content {
+            background: #0c1222;
+            border: 1px solid rgba(245, 158, 11, 0.35);
+            border-radius: 20px;
+            width: 100%;
+            max-width: 750px;
+            padding: 24px;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: popIn 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes popIn {
+            from { opacity: 0; transform: scale(0.92) translateY(10px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .confirm-modal { z-index: 300; }
+        .confirm-box {
+            background: linear-gradient(160deg, #0f172a 0%, #090d16 100%);
+            border: 1px solid rgba(244, 63, 94, 0.45);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.85), 0 0 30px rgba(244, 63, 94, 0.15);
+            border-radius: 24px;
+            width: 100%;
+            max-width: 380px;
+            padding: 26px 22px;
+            text-align: center;
+            animation: popIn 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .confirm-icon-ring {
+            width: 60px;
+            height: 60px;
+            border-radius: 20px;
+            margin: 0 auto 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            background: rgba(244, 63, 94, 0.14);
+            color: var(--neon-rose);
+            border: 1px solid rgba(244, 63, 94, 0.35);
+            box-shadow: 0 0 20px rgba(244, 63, 94, 0.2);
+        }
+        .confirm-box.warning-mode {
+            border-color: rgba(245, 158, 11, 0.45);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.85), 0 0 30px rgba(245, 158, 11, 0.15);
+        }
+        .confirm-box.warning-mode .confirm-icon-ring {
+            background: rgba(245, 158, 11, 0.14);
+            color: var(--neon-amber);
+            border-color: rgba(245, 158, 11, 0.35);
+            box-shadow: 0 0 20px rgba(245, 158, 11, 0.2);
+        }
+
+        .form-group { margin-bottom: 14px; }
+        .form-group label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 6px; }
+        .form-control {
+            width: 100%;
+            background: #060a12;
+            border: 1px solid var(--border-card);
+            border-radius: 10px;
+            padding: 10px 12px;
+            color: white;
+            font-size: 13px;
+        }
+        .form-control:focus { outline: none; border-color: var(--neon-amber); }
+
+        #toast {
+            position: fixed; bottom: 24px; left: 24px;
+            background: rgba(16, 185, 129, 0.95); color: #000; font-weight: 800;
+            padding: 14px 22px; border-radius: 14px; font-size: 13px;
+            display: flex; align-items: center; gap: 10px;
+            box-shadow: 0 12px 30px rgba(16, 185, 129, 0.35);
+            transform: translateY(100px); opacity: 0; transition: all 0.3s ease; z-index: 200;
+        }
+        #toast.show { transform: translateY(0); opacity: 1; }
+
+        .progress-bar-bg {
+            background: rgba(255,255,255,0.05);
+            height: 8px;
+            border-radius: 6px;
+            overflow: hidden;
+            margin-top: 6px;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            border-radius: 6px;
+            background: var(--neon-amber);
+            transition: width 0.4s ease;
+        }
+
+        .shift-calc-box {
+            background: rgba(0, 0, 0, 0.35);
+            border: 1px solid var(--border-card);
+            border-radius: 12px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .shift-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.08);
+        }
+        .shift-row:last-child { border-bottom: none; padding-bottom: 0; }
+    </style>
+</head>
+<body>
+
+    <!-- Admin Header -->
+    <header class="glass-header">
+        <div class="header-container">
+            <div style="display:flex; align-items:center; gap:14px;">
+                <div style="width:44px; height:44px; border-radius:14px; background:linear-gradient(135deg, var(--neon-amber), #d97706); display:flex; align-items:center; justify-content:center; color:#000; font-size:22px;">
+                    <i class="fa-solid fa-mug-hot"></i>
+                </div>
+                <div>
+                    <h1 style="font-size:17px; font-weight:900; color:white;">مدیریت جامع کافه لاوین</h1>
+                </div>
+            </div>
+
+            <div class="nav-switcher">
+                <button class="nav-btn active" onclick="switchTab('inventory', this)"><i class="fa-solid fa-list-check"></i> منو</button>
+                <button class="nav-btn" onclick="switchTab('financials', this)"><i class="fa-solid fa-chart-line"></i> آنالیز مالی</button>
+                <button class="nav-btn" onclick="switchTab('loyalty', this)"><i class="fa-solid fa-users"></i> باشگاه مشتریان</button>
+                <button class="nav-btn" onclick="switchTab('ingredients', this)"><i class="fa-solid fa-boxes-stacked"></i> انبار مواد</button>
+                <button class="nav-btn" onclick="switchTab('shifts', this)"><i class="fa-solid fa-cash-register"></i> تسویه شیفت</button>
+                <button class="nav-btn" onclick="switchTab('invoices', this)"><i class="fa-solid fa-file-invoice-dollar"></i> فاکتورها</button>
+            </div>
+
+            <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                <button class="btn btn-green" onclick="openInvoiceModal()"><i class="fa-solid fa-receipt"></i> فاکتور جدید</button>
+                <button class="btn btn-secondary" onclick="openQrModal()"><i class="fa-solid fa-qrcode text-amber-400"></i> QR میز</button>
+                <button class="btn btn-secondary" onclick="openCategoriesModal()"><i class="fa-solid fa-sliders text-cyan-400"></i> دسته‌ها</button>
+                <button class="btn btn-primary" onclick="openProductModal()"><i class="fa-solid fa-plus"></i> ثبت آیتم</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        
+        <!-- SECTION 1: INVENTORY & MENU MANAGEMENT -->
+        <div id="tab-inventory" class="view-section active">
+            <div class="grid-kpi">
+                <div class="glass-card" style="border-right: 4px solid var(--neon-amber);">
+                    <p style="font-size:11px; color:var(--text-muted);">کل محصولات</p>
+                    <h2 id="kpi-total" style="font-size:18px; font-weight:900; margin-top:4px;">0</h2>
+                </div>
+                <div class="glass-card" style="border-right: 4px solid var(--neon-cyan);">
+                    <p style="font-size:11px; color:var(--text-muted);">دسته‌بندی‌های فعال</p>
+                    <h2 id="kpi-cats" style="font-size:18px; font-weight:900; margin-top:4px;">0</h2>
+                </div>
+                <div class="glass-card" style="border-right: 4px solid var(--neon-green);">
+                    <p style="font-size:11px; color:var(--text-muted);">فروش امروز</p>
+                    <h2 id="kpi-today-sales" style="font-size:15px; font-weight:900; margin-top:4px; color:var(--neon-green);">۰ تومان</h2>
+                </div>
+                <div class="glass-card" style="border-right: 4px solid var(--neon-purple);">
+                    <p style="font-size:11px; color:var(--text-muted);">ارزش سرمایه منو</p>
+                    <h2 id="kpi-menu-value" style="font-size:15px; font-weight:900; margin-top:4px; color:var(--neon-purple);">۰ تومان</h2>
+                </div>
+            </div>
+
+            <div class="glass-card" style="margin-bottom:16px; padding:14px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                <input type="text" id="adminSearch" class="form-control" placeholder="جستجوی نام محصول، دسته..." style="max-width:300px;" oninput="renderAdminTable()">
+                <a href="index.html" target="_blank" class="btn btn-secondary" style="color:var(--neon-cyan);">
+                    <i class="fa-solid fa-eye"></i> پیش‌نمایش زنده منوی مشتری
+                </a>
+            </div>
+
+            <div class="table-container">
+                <table class="custom-table">
+                    <thead>
+                        <tr>
+                            <th>نام محصول</th>
+                            <th>دسته‌بندی</th>
+                            <th>قیمت خرید (تومان)</th>
+                            <th>قیمت فروش (تومان)</th>
+                            <th>حاشیه سود واحد</th>
+                            <th>وضعیت</th>
+                            <th>عملیات مدیر</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- SECTION 2: FINANCIAL ANALYTICS & DAILY SUMMARY -->
+        <div id="tab-financials" class="view-section">
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap:20px;">
+                <div class="glass-card">
+                    <h3 style="font-size:15px; font-weight:800; color:var(--neon-green); margin-bottom:16px;">
+                        <i class="fa-solid fa-sack-dollar"></i> سررسید مالی و سود امروز (کافه لاوین)
+                    </h3>
+                    <div style="display:flex; flex-direction:column; gap:12px;">
+                        <div style="background:rgba(0,0,0,0.3); padding:12px; border-radius:12px; display:flex; justify-content:space-between;">
+                            <span style="color:var(--text-muted); font-size:12px;">تعداد فاکتورهای امروز:</span>
+                            <strong id="finTodayCount" style="color:white;">0 فاکتور</strong>
+                        </div>
+                        <div style="background:rgba(0,0,0,0.3); padding:12px; border-radius:12px; display:flex; justify-content:space-between;">
+                            <span style="color:var(--text-muted); font-size:12px;">مجموع کل فروش امروز:</span>
+                            <strong id="finTodayTotal" style="color:var(--neon-green);">۰ تومان</strong>
+                        </div>
+                        <div style="background:rgba(0,0,0,0.3); padding:12px; border-radius:12px; display:flex; justify-content:space-between;">
+                            <span style="color:var(--text-muted); font-size:12px;">سود ناخالص برآوردی امروز:</span>
+                            <strong id="finTodayProfit" style="color:var(--neon-amber);">۰ تومان</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-card">
+                    <h3 style="font-size:15px; font-weight:800; color:var(--neon-amber); margin-bottom:16px;">
+                        <i class="fa-solid fa-chart-pie"></i> تحلیل حاشیه سود دسته‌بندی‌ها
+                    </h3>
+                    <div id="categoryFinancialList" style="display:flex; flex-direction:column; gap:12px;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 3: LOYALTY CLUB -->
+        <div id="tab-loyalty" class="view-section">
+            <div class="glass-card" style="margin-bottom:16px; padding:14px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                <div>
+                    <h3 style="font-size:15px; font-weight:800; color:var(--neon-amber);"><i class="fa-solid fa-users"></i> باشگاه مشتریان و وفاداری (Lavin Club)</h3>
+                    <p style="font-size:11px; color:var(--text-muted); margin-top:2px;">با کلیک روی دکمه‌های +/- مراجعات، امتیاز مشتریان به‌روزرسانی می‌شود.</p>
+                </div>
+                <button class="btn btn-primary" onclick="openCustomerModal()"><i class="fa-solid fa-user-plus"></i> ثبت مشتری جدید</button>
+            </div>
+            <div class="table-container">
+                <table class="custom-table">
+                    <thead>
+                        <tr>
+                            <th>نام و نام خانوادگی</th>
+                            <th>شماره تماس</th>
+                            <th>تعداد مراجعات</th>
+                            <th>امتیاز وفاداری</th>
+                            <th>سطح عضویت</th>
+                            <th>عملیات مدیر</th>
+                        </tr>
+                    </thead>
+                    <tbody id="customerTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- SECTION 4: INGREDIENT INVENTORY -->
+        <div id="tab-ingredients" class="view-section">
+            <div class="glass-card" style="margin-bottom:16px; padding:14px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                <h3 style="font-size:15px; font-weight:800; color:var(--neon-cyan);"><i class="fa-solid fa-boxes-stacked"></i> مدیریت انبار مواد اولیه کافه</h3>
+                <button class="btn btn-primary" onclick="openIngredientModal()"><i class="fa-solid fa-plus"></i> افزودن ماده اولیه</button>
+            </div>
+            <div class="table-container">
+                <table class="custom-table">
+                    <thead>
+                        <tr>
+                            <th>نام ماده اولیه</th>
+                            <th>موجودی فعلی</th>
+                            <th>واحد اندازه‌گیری</th>
+                            <th>حداقل هشدار</th>
+                            <th>وضعیت انبار</th>
+                            <th>عملیات مدیر</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ingredientTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- SECTION 5: SIMPLIFIED PROFESSIONAL SHIFT SETTLEMENT (POS & CASH) -->
+        <div id="tab-shifts" class="view-section">
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap:20px; margin-bottom:24px;">
+                <!-- Shift Closing Form -->
+                <div class="glass-card" style="border-top: 3px solid var(--neon-purple);">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                        <h3 id="shiftFormTitle" style="font-size:15px; font-weight:800; color:var(--neon-purple);">
+                            <i class="fa-solid fa-cash-register"></i> ثبت و تسویه شیفت (POS و نقدی)
+                        </h3>
+                        <button type="button" id="cancelShiftEditBtn" class="btn btn-secondary" style="display:none; padding:4px 8px; font-size:11px;" onclick="resetShiftForm()">انصراف از ویرایش</button>
+                    </div>
+                    <form id="shiftForm" onsubmit="saveShift(event)">
+                        <input type="hidden" id="editShiftId">
+                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                            <div class="form-group">
+                                <label>نام صندوق‌دار *</label>
+                                <input type="text" id="shiftCashier" class="form-control" placeholder="مثلاً: علی احمدی" required>
+                            </div>
+                            <div class="form-group">
+                                <label>نوبت شیفت</label>
+                                <select id="shiftPeriod" class="form-control">
+                                    <option value="شیفت صبح">شیفت صبح</option>
+                                    <option value="شیفت عصر">شیفت عصر</option>
+                                    <option value="شیفت کامل روزانه">شیفت کامل روزانه</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                            <div class="form-group">
+                                <label>فروش دستگاه کارتخوان (POS)</label>
+                                <input type="number" id="shiftPosSales" class="form-control" value="0" oninput="updateLiveShiftPreview()" required>
+                            </div>
+                            <div class="form-group">
+                                <label>فروش نقدی سیستمی</label>
+                                <input type="number" id="shiftCashSales" class="form-control" value="0" oninput="updateLiveShiftPreview()" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label style="color:var(--neon-amber); font-weight:bold;">وجه نقد شمارش‌شده واقعی در دخل (تومان) *</label>
+                            <input type="number" id="shiftActualCash" class="form-control" style="border-color:rgba(245,158,11,0.4);" placeholder="مبلغ نقد داخل صندوق..." oninput="updateLiveShiftPreview()" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>توضیحات و یادداشت شیفت</label>
+                            <input type="text" id="shiftNotes" class="form-control" placeholder="توضیحات اختیاری...">
+                        </div>
+
+                        <button type="submit" id="shiftSubmitBtn" class="btn btn-primary" style="width:100%; justify-content:center; padding:11px; font-size:13px;">
+                            <i class="fa-solid fa-check-double"></i> ثبت و بستن شیفت
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Live Financial Reconciliation Calculator -->
+                <div class="glass-card" style="border-top: 3px solid var(--neon-cyan); display:flex; flex-direction:column; justify-content:space-between;">
+                    <div>
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                            <h3 style="font-size:15px; font-weight:800; color:var(--neon-cyan);">
+                                <i class="fa-solid fa-scale-balanced"></i> ترازنامه لحظه‌ای صندوق
+                            </h3>
+                            <button type="button" class="btn btn-secondary" style="padding:5px 10px; font-size:11px;" onclick="autoFillFromInvoices()">
+                                <i class="fa-solid fa-wand-magic-sparkles text-amber-400"></i> فراخوانی از فاکتورها
+                            </button>
+                        </div>
+
+                        <div class="shift-calc-box">
+                            <div class="shift-row">
+                                <span style="color:var(--text-muted);">فروش سیستمی نقدی:</span>
+                                <strong id="prevCashSales" style="color:var(--neon-green);">۰ تومان</strong>
+                            </div>
+                            <div class="shift-row">
+                                <span style="color:var(--text-muted);">وجه نقد شمارش‌شده واقعی:</span>
+                                <strong id="prevActualCash" style="color:var(--neon-amber);">۰ تومان</strong>
+                            </div>
+                            <div class="shift-row">
+                                <span style="color:var(--text-muted);">فروش دستگاه کارتخوان (POS):</span>
+                                <strong id="prevPosSales" style="color:#c084fc;">۰ تومان</strong>
+                            </div>
+                            <div class="shift-row" style="background:rgba(6, 182, 212, 0.08); padding:8px; border-radius:8px; border:1px solid rgba(6, 182, 212, 0.25);">
+                                <span style="color:var(--neon-cyan); font-weight:bold;">مجموع کل فروش شیفت:</span>
+                                <strong id="prevTotalShiftSales" style="color:var(--neon-cyan); font-size:14px;">۰ تومان</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="discrepancyBanner" style="margin-top:16px; padding:14px; border-radius:12px; text-align:center; background:rgba(16, 185, 129, 0.15); border:1px solid rgba(16, 185, 129, 0.4);">
+                        <span style="font-size:11px; color:var(--text-muted); display:block; margin-bottom:4px;">وضعیت تراز نقدی صندوق:</span>
+                        <strong id="prevDiscrepancyText" style="font-size:15px; color:var(--neon-green);">بدون مغایرت نقدی</strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Shift History Table -->
+            <div class="glass-card" style="padding:0; overflow:hidden;">
+                <div style="padding:16px; background:rgba(0,0,0,0.4); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                    <h3 style="font-size:15px; font-weight:800; color:white;">تاریخچه شیفت‌های تسویه‌شده</h3>
+                    <span style="font-size:11px; color:var(--text-muted);">امکان ویرایش، حذف و دانلود PDF گزارش</span>
+                </div>
+                <div class="table-container" style="border:none;">
+                    <table class="custom-table">
+                        <thead>
+                            <tr>
+                                <th>تاریخ و نوبت</th>
+                                <th>صندوق‌دار</th>
+                                <th>فروش کارتخوان (POS)</th>
+                                <th>فروش نقدی</th>
+                                <th>مجموع کل فروش</th>
+                                <th>وجه شمارش‌شده</th>
+                                <th>وضعیت مغایرت</th>
+                                <th>عملیات مدیر</th>
+                            </tr>
+                        </thead>
+                        <tbody id="shiftTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 6: INVOICES HISTORY -->
+        <div id="tab-invoices" class="view-section">
+            <div class="glass-card" style="margin-bottom:16px; padding:14px; display:flex; justify-content:space-between; align-items:center;">
+                <h3 style="font-size:15px; font-weight:800; color:var(--neon-cyan);">تاریخچه فاکتورهای صادرشده</h3>
+                <button class="btn btn-green" onclick="openInvoiceModal()"><i class="fa-solid fa-plus"></i> صدور فاکتور جدید</button>
+            </div>
+            <div class="table-container">
+                <table class="custom-table">
+                    <thead>
+                        <tr>
+                            <th>شماره فاکتور</th>
+                            <th>شماره میز / مشتری</th>
+                            <th>تاریخ صدور</th>
+                            <th>مبلغ کل (تومان)</th>
+                            <th>روش پرداخت</th>
+                            <th>عملیات</th>
+                        </tr>
+                    </thead>
+                    <tbody id="invoiceTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Hidden Shift Print Container for PDF Export -->
+    <div id="hiddenShiftPrintContainer" style="display:none;"></div>
+
+    <!-- MODAL 1: Add/Edit Product -->
+    <div class="modal" id="productModal">
+        <div class="modal-content">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                <h3 id="modalTitle" style="font-size:16px; font-weight:800; color:var(--neon-amber);">ثبت آیتم جدید به منوی کافه لاوین</h3>
+                <i class="fa-solid fa-xmark" style="cursor:pointer; color:var(--text-muted);" onclick="closeProductModal()"></i>
+            </div>
+            <form id="productForm" onsubmit="saveProduct(event)">
+                <input type="hidden" id="editId">
+                <div class="form-group">
+                    <label>نام محصول / نوشیدنی *</label>
+                    <input type="text" id="pName" class="form-control" placeholder="مثلاً: اسپرسو دبل کافه لاوین" required>
+                </div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                    <div class="form-group"><label>دسته‌بندی</label><select id="pCategory" class="form-control"></select></div>
+                    <div class="form-group"><label>قیمت خرید / تمام شده (تومان)</label><input type="number" id="pCost" class="form-control" placeholder="40000" value="0"></div>
+                </div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                    <div class="form-group"><label>قیمت فروش (تومان) *</label><input type="number" id="pPrice" class="form-control" placeholder="85000" required></div>
+                    <div class="form-group"><label>وضعیت موجودی</label><select id="pStatus" class="form-control"><option value="موجود">موجود</option><option value="تمام شده">تمام شده</option></select></div>
+                </div>
+                <div class="form-group">
+                    <label>توضیحات کوتاه یا ترکیبات</label>
+                    <input type="text" id="pDesc" class="form-control" placeholder="ترکیب دانه‌های عربیکا...">
+                </div>
+                <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:20px;">
+                    <button type="button" class="btn btn-secondary" onclick="closeProductModal()">انصراف</button>
+                    <button type="submit" class="btn btn-primary">ذخیره آیتم</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 2: Invoice Modal with PDF Download -->
+    <div class="modal" id="invoiceModal">
+        <div class="modal-content" style="max-width:850px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                <h3 style="font-size:16px; font-weight:800; color:var(--neon-green);">صدور فاکتور رسمی کافه لاوین</h3>
+                <i class="fa-solid fa-xmark" style="cursor:pointer; color:var(--text-muted);" onclick="closeInvoiceModal()"></i>
+            </div>
+            
+            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; margin-bottom:14px;">
+                <div class="form-group"><label>شماره میز / مشتری</label><input type="text" id="invTableNum" class="form-control" value="میز ۴" oninput="renderInvoicePreview()"></div>
+                <div class="form-group"><label>روش پرداخت</label><select id="invPayMethod" class="form-control" onchange="renderInvoicePreview()"><option value="کارتخوان">کارتخوان</option><option value="نقدی">نقدی</option></select></div>
+                <div class="form-group"><label>تاریخ فاکتور</label><input type="text" id="invDate" class="form-control" oninput="renderInvoicePreview()"></div>
+            </div>
+
+            <div style="background:rgba(0,0,0,0.3); padding:12px; border-radius:12px; margin-bottom:14px; display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+                <select id="invSelectProduct" class="form-control" style="flex:2; min-width:180px;"></select>
+                <input type="number" id="invAddQty" class="form-control" value="1" min="1" style="width:70px;">
+                <button class="btn btn-primary" onclick="addInvoiceItem()"><i class="fa-solid fa-plus"></i> افزودن به فاکتور</button>
+            </div>
+
+            <div style="max-height:160px; overflow-y:auto; margin-bottom:14px; border:1px solid var(--border-card); border-radius:10px;">
+                <table class="custom-table">
+                    <thead>
+                        <tr>
+                            <th>نام کالا</th>
+                            <th>تعداد</th>
+                            <th>قیمت واحد</th>
+                            <th>مبلغ کل</th>
+                            <th>حذف</th>
+                        </tr>
+                    </thead>
+                    <tbody id="invCurrentItemsBody"></tbody>
+                </table>
+            </div>
+
+            <div id="printableInvoiceArea" style="background:#fff; color:#000; padding:18px; border-radius:12px; font-family:'Vazirmatn', sans-serif;"></div>
+
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:16px;">
+                <button class="btn btn-secondary" onclick="closeInvoiceModal()">انصراف</button>
+                <button class="btn btn-green" onclick="saveAndDownloadInvoicePDF()"><i class="fa-solid fa-file-pdf"></i> ذخیره فاکتور و دانلود PDF</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 3: Customer Club Add/Edit Modal -->
+    <div class="modal" id="customerModal">
+        <div class="modal-content" style="max-width:450px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                <h3 id="custModalTitle" style="font-size:16px; font-weight:800; color:var(--neon-amber);">ثبت مشتری در باشگاه وفاداری</h3>
+                <i class="fa-solid fa-xmark" style="cursor:pointer; color:var(--text-muted);" onclick="closeCustomerModal()"></i>
+            </div>
+            <form id="customerForm" onsubmit="saveCustomer(event)">
+                <input type="hidden" id="editCustId">
+                <div class="form-group"><label>نام و نام خانوادگی *</label><input type="text" id="custName" class="form-control" placeholder="سارا محمدی" required></div>
+                <div class="form-group"><label>شماره تماس (موبایل) *</label><input type="text" id="custPhone" class="form-control" placeholder="0912..." required></div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                    <div class="form-group"><label>تعداد مراجعات</label><input type="number" id="custVisits" class="form-control" value="1" min="0" required></div>
+                    <div class="form-group"><label>امتیاز فعلی</label><input type="number" id="custPoints" class="form-control" value="50" min="0" required></div>
+                </div>
+                <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:20px;">
+                    <button type="button" class="btn btn-secondary" onclick="closeCustomerModal()">انصراف</button>
+                    <button type="submit" class="btn btn-primary">ذخیره اطلاعات</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 4: Ingredient Add/Edit Modal -->
+    <div class="modal" id="ingredientModal">
+        <div class="modal-content" style="max-width:450px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                <h3 id="ingModalTitle" style="font-size:16px; font-weight:800; color:var(--neon-cyan);">مدیریت انبار مواد اولیه</h3>
+                <i class="fa-solid fa-xmark" style="cursor:pointer; color:var(--text-muted);" onclick="closeIngredientModal()"></i>
+            </div>
+            <form id="ingredientForm" onsubmit="saveIngredient(event)">
+                <input type="hidden" id="editIngId">
+                <div class="form-group"><label>نام ماده اولیه *</label><input type="text" id="ingName" class="form-control" placeholder="دانه قهوه" required></div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                    <div class="form-group"><label>موجودی فعلی *</label><input type="number" id="ingStock" class="form-control" value="10" min="0" step="0.5" required></div>
+                    <div class="form-group"><label>واحد اندازه‌گیری *</label><input type="text" id="ingUnit" class="form-control" placeholder="کیلوگرم" required></div>
+                </div>
+                <div class="form-group"><label>حداقل حد هشدار کسری *</label><input type="number" id="ingMin" class="form-control" value="3" min="0" step="0.5" required></div>
+                <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:20px;">
+                    <button type="button" class="btn btn-secondary" onclick="closeIngredientModal()">انصراف</button>
+                    <button type="submit" class="btn btn-primary">ذخیره در انبار</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 5: Categories Manager -->
+    <div class="modal" id="categoriesModal">
+        <div class="modal-content" style="max-width:450px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                <h3 style="font-size:16px; font-weight:800; color:var(--neon-cyan);">مدیریت دسته‌بندی‌ها</h3>
+                <i class="fa-solid fa-xmark" style="cursor:pointer; color:var(--text-muted);" onclick="closeCategoriesModal()"></i>
+            </div>
+            <div style="display:flex; gap:6px; margin-bottom:14px;">
+                <input type="text" id="newCatInput" class="form-control" placeholder="نام دسته‌بندی جدید...">
+                <button class="btn btn-primary" onclick="addCategory()">افزودن</button>
+            </div>
+            <div id="catList" style="display:flex; flex-direction:column; gap:6px; max-height:220px; overflow-y:auto;"></div>
+        </div>
+    </div>
+
+    <!-- MODAL 6: QR Code Generator -->
+    <div class="modal" id="qrModal">
+        <div class="modal-content" style="max-width:420px; text-align:center;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                <h3 style="font-size:16px; font-weight:800; color:var(--neon-amber);">ساخت برچسب QR میزهای کافه لاوین</h3>
+                <i class="fa-solid fa-xmark" style="cursor:pointer; color:var(--text-muted);" onclick="closeQrModal()"></i>
+            </div>
+            <div class="form-group" style="text-align:right;">
+                <label>شماره میز:</label>
+                <input type="number" id="tableInput" class="form-control" value="1" min="1">
+            </div>
+            <button class="btn btn-primary" style="width:100%; justify-content:center;" onclick="generateQrLink()">تولید لینک و برچسب میز</button>
+            <div id="qrOutputBox" style="margin-top:16px;"></div>
+        </div>
+    </div>
+
+    <!-- MODAL 7: Stylish Custom Confirm / Alert Popup -->
+    <div class="modal confirm-modal" id="customConfirmModal">
+        <div class="confirm-box" id="customConfirmBox">
+            <div class="confirm-icon-ring" id="confirmIconRing">
+                <i class="fa-solid fa-trash-can" id="confirmIcon"></i>
+            </div>
+            <h3 id="confirmTitle" style="font-size:17px; font-weight:900; color:#fff; margin-bottom:8px;">تأیید عملیات حذف</h3>
+            <p id="confirmMessage" style="font-size:13px; color:var(--text-muted); line-height:1.7; margin-bottom:22px;">آیا از انجام این عملیات اطمینان دارید؟</p>
+            <div style="display:flex; gap:10px; justify-content:center;">
+                <button type="button" class="btn btn-secondary" id="confirmCancelBtn" style="flex:1; justify-content:center; padding:11px;">انصراف</button>
+                <button type="button" class="btn btn-danger" id="confirmOkBtn" style="flex:1; justify-content:center; padding:11px; background:var(--neon-rose); color:#fff;">تأیید و حذف</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast">
+        <i class="fa-solid fa-circle-check text-lg"></i>
+        <span id="toastMsg">تغییرات ثبت شد</span>
+    </div>
+
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+        const SUPABASE_URL = 'https://hvhgonsbelsdfzilztht.supabase.co';
+        const SUPABASE_ANON_KEY = 'Sb_publishable_peKpXNkCwk4dZpGm2UKa5w_CK3ZG8X4';
+        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        const lavinSyncChannel = new BroadcastChannel('lavin_cafe_sync_channel');
+
+        let categories = JSON.parse(localStorage.getItem('cafe_categories')) || ['بار گرم', 'بار سرد', 'کیک و دسر', 'غذا و اسنک'];
+        let products = JSON.parse(localStorage.getItem('cafe_products')) || [
+            { id: '1', name: 'اسپرسو دبل لاوین', category: 'بار گرم', cost: 35000, price: 75000, status: 'موجود', desc: 'عصاره خالص ۱۰۰٪ دانه‌های عربیکا' },
+            { id: '2', name: 'کافه لاته مخصوص', category: 'بار گرم', cost: 45000, price: 95000, status: 'موجود', desc: 'اسپرسو به همراه شیر مخملی و فوم شیر' },
+            { id: '3', name: 'آیس کارامل ماکیاتو', category: 'بار سرد', cost: 50000, price: 115000, status: 'موجود', desc: 'اسپرسو خنک، شیر، یخ و سس کارامل دست‌ساز' },
+            { id: '4', name: 'کیک شکلاتی خیس', category: 'کیک و دسر', cost: 55000, price: 120000, status: 'موجود', desc: 'کیک اسفنجی همراه با گاناش شکلات تلخ' }
+        ];
+
+        let invoices = JSON.parse(localStorage.getItem('cafe_invoices')) || [];
+        let customers = JSON.parse(localStorage.getItem('cafe_customers')) || [
+            { id: '1', name: 'رضا اکبری', phone: '09121112233', visits: 5, points: 250 },
+            { id: '2', name: 'مینا رضایی', phone: '09354445566', visits: 2, points: 100 }
+        ];
+        let ingredients = JSON.parse(localStorage.getItem('cafe_ingredients')) || [
+            { id: '1', name: 'دانه قهوه عربیکا', stock: 8, unit: 'کیلوگرم', minStock: 3 },
+            { id: '2', name: 'شیر تازه پاستوریزه', stock: 12, unit: 'لیتر', minStock: 5 },
+            { id: '3', name: 'شکلات تلخ گاناش', stock: 2, unit: 'کیلوگرم', minStock: 4 }
+        ];
+        let shifts = JSON.parse(localStorage.getItem('cafe_shifts')) || [];
+        let currentInvoiceItems = [];
+
+        async function loadProductsFromSupabase() {
+            try {
+                const { data, error } = await supabase.from('cafe_lavin').select('*');
+                if (!error && data) {
+                    if (data.length > 0) {
+                        products = data.map(item => ({
+                            id: String(item.id),
+                            name: item.name || '',
+                            category: item.category || 'بار گرم',
+                            cost: Number(item.cost) || 0,
+                            price: Number(item.price) || 0,
+                            status: item.status || 'موجود',
+                            desc: item.desc || ''
+                        }));
+                        products.forEach(p => {
+                            if (p.category && !categories.includes(p.category)) {
+                                categories.push(p.category);
+                            }
+                        });
+                        saveLocalData();
+                    } else if (products.length > 0) {
+                        const rowsToInsert = products.map(p => ({
+                            id: String(p.id) || String(Date.now()),
+                            name: p.name,
+                            category: p.category,
+                            cost: Number(p.cost) || 0,
+                            price: Number(p.price) || 0,
+                            status: p.status,
+                            desc: p.desc || ''
+                        }));
+                        await supabase.from('cafe_lavin').upsert(rowsToInsert);
+                    }
+                    renderAdminTable();
+                }
+            } catch (err) {
+                console.error('Supabase fetch error:', err);
+            }
+        }
+
+        supabase
+            .channel('admin:cafe_lavin')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'cafe_lavin' }, () => {
+                loadProductsFromSupabase();
+            })
+            .subscribe();
+
+        window.showCustomDialog = function({ title, message, confirmText = 'تأیید و حذف', cancelText = 'انصراف', isAlertOnly = false, onConfirm = null }) {
+            const modal = document.getElementById('customConfirmModal');
+            const box = document.getElementById('customConfirmBox');
+            const icon = document.getElementById('confirmIcon');
+            const titleEl = document.getElementById('confirmTitle');
+            const msgEl = document.getElementById('confirmMessage');
+            const okBtn = document.getElementById('confirmOkBtn');
+            const cancelBtn = document.getElementById('confirmCancelBtn');
+
+            titleEl.innerText = title;
+            msgEl.innerText = message;
+            okBtn.innerText = confirmText;
+            cancelBtn.innerText = cancelText;
+
+            if (isAlertOnly) {
+                box.classList.add('warning-mode');
+                icon.className = 'fa-solid fa-triangle-exclamation';
+                cancelBtn.style.display = 'none';
+                okBtn.style.background = 'linear-gradient(135deg, var(--neon-amber), #d97706)';
+                okBtn.style.color = '#000';
+            } else {
+                box.classList.remove('warning-mode');
+                icon.className = 'fa-solid fa-trash-can';
+                cancelBtn.style.display = 'inline-flex';
+                okBtn.style.background = 'var(--neon-rose)';
+                okBtn.style.color = '#fff';
+            }
+
+            modal.classList.add('active');
+
+            const closeDialog = () => {
+                modal.classList.remove('active');
+                okBtn.onclick = null;
+                cancelBtn.onclick = null;
+            };
+
+            cancelBtn.onclick = closeDialog;
+            okBtn.onclick = () => {
+                closeDialog();
+                if (typeof onConfirm === 'function') onConfirm();
+            };
+        };
+
+        window.showToast = function(msg, isError = false) {
+            const toast = document.getElementById('toast');
+            toast.style.background = isError ? 'rgba(244, 63, 94, 0.95)' : 'rgba(16, 185, 129, 0.95)';
+            toast.style.color = isError ? '#fff' : '#000';
+            document.getElementById('toastMsg').innerText = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2800);
+        };
+
+        function saveLocalData() {
+            localStorage.setItem('cafe_products', JSON.stringify(products));
+            localStorage.setItem('cafe_categories', JSON.stringify(categories));
+            localStorage.setItem('cafe_invoices', JSON.stringify(invoices));
+            localStorage.setItem('cafe_customers', JSON.stringify(customers));
+            localStorage.setItem('cafe_ingredients', JSON.stringify(ingredients));
+            localStorage.setItem('cafe_shifts', JSON.stringify(shifts));
+            lavinSyncChannel.postMessage({ type: 'UPDATE_MENU', timestamp: performance.now() });
+        }
+
+        window.saveData = saveLocalData;
+
+        window.switchTab = function(tabName, btn) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+            btn.classList.add('active');
+            if(tabName === 'financials') renderFinancials();
+            if(tabName === 'loyalty') renderCustomers();
+            if(tabName === 'ingredients') renderIngredients();
+            if(tabName === 'shifts') {
+                updateLiveShiftPreview();
+                renderShifts();
+            }
+            if(tabName === 'invoices') renderInvoiceHistory();
+        };
+
+        window.renderAdminTable = function() {
+            const search = document.getElementById('adminSearch').value.toLowerCase();
+            const tbody = document.getElementById('adminTableBody');
+            tbody.innerHTML = '';
+
+            const filtered = products.filter(p => p.name.toLowerCase().includes(search) || p.category.toLowerCase().includes(search));
+
+            const totalVal = products.reduce((acc, p) => acc + p.price, 0);
+            const todaySales = invoices.reduce((acc, inv) => acc + inv.totalAmount, 0);
+
+            document.getElementById('kpi-total').innerText = products.length;
+            document.getElementById('kpi-cats').innerText = categories.length;
+            document.getElementById('kpi-today-sales').innerText = new Intl.NumberFormat('fa-IR').format(todaySales) + ' تومان';
+            document.getElementById('kpi-menu-value').innerText = new Intl.NumberFormat('fa-IR').format(totalVal) + ' تومان';
+
+            filtered.forEach(p => {
+                const profit = p.price - (p.cost || 0);
+                tbody.innerHTML += `
+                    <tr>
+                        <td style="font-weight:800; color:white;">${p.name}</td>
+                        <td><span class="badge" style="background:rgba(255,255,255,0.06); color:var(--neon-cyan);">${p.category}</span></td>
+                        <td>${new Intl.NumberFormat('fa-IR').format(p.cost || 0)} تومان</td>
+                        <td style="color:var(--neon-amber); font-weight:bold;">${new Intl.NumberFormat('fa-IR').format(p.price)} تومان</td>
+                        <td style="color:var(--neon-green); font-weight:bold;">+${new Intl.NumberFormat('fa-IR').format(profit)} تومان</td>
+                        <td><span class="badge" style="background:${p.status === 'موجود' ? 'rgba(16,185,129,0.15)' : 'rgba(244,63,94,0.15)'}; color:${p.status === 'موجود' ? 'var(--neon-green)' : 'var(--neon-rose)'};">${p.status}</span></td>
+                        <td>
+                            <div style="display:flex; gap:6px;">
+                                <button class="btn btn-secondary" style="padding:5px 10px;" onclick="openProductModal('${p.id}')" title="ویرایش"><i class="fa-solid fa-pen"></i></button>
+                                <button class="btn btn-danger" style="padding:5px 10px;" onclick="deleteProduct('${p.id}')" title="حذف"><i class="fa-solid fa-trash"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+        };
+
+        window.renderFinancials = function() {
+            const todayTotal = invoices.reduce((acc, inv) => acc + inv.totalAmount, 0);
+            document.getElementById('finTodayCount').innerText = `${invoices.length} فاکتور`;
+            document.getElementById('finTodayTotal').innerText = `${new Intl.NumberFormat('fa-IR').format(todayTotal)} تومان`;
+            document.getElementById('finTodayProfit').innerText = `${new Intl.NumberFormat('fa-IR').format(Math.round(todayTotal * 0.45))} تومان`;
+
+            const container = document.getElementById('categoryFinancialList');
+            container.innerHTML = categories.map(cat => {
+                const catProducts = products.filter(p => p.category === cat);
+                const avgPrice = catProducts.length ? Math.round(catProducts.reduce((a,b) => a+b.price, 0) / catProducts.length) : 0;
+                return `
+                    <div style="background:rgba(0,0,0,0.3); padding:12px; border-radius:12px;">
+                        <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:4px;">
+                            <span style="color:white; font-weight:bold;">${cat} (${catProducts.length} آیتم)</span>
+                            <span style="color:var(--neon-amber);">میانگین قیمت: ${new Intl.NumberFormat('fa-IR').format(avgPrice)} تومان</span>
+                        </div>
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: ${Math.min(catProducts.length * 20, 100)}%;"></div></div>
+                    </div>
+                `;
+            }).join('');
+        };
+
+        window.renderCustomers = function() {
+            const tbody = document.getElementById('customerTableBody');
+            tbody.innerHTML = customers.map((c, idx) => {
+                let tier = 'عضو برنزی';
+                let tierColor = '#cd7f32';
+                if(c.visits >= 10) { tier = 'عضو طلایی VIP'; tierColor = '#f59e0b'; }
+                else if(c.visits >= 5) { tier = 'عضو نقره‌ای'; tierColor = '#94a3b8'; }
+
+                return `
+                    <tr>
+                        <td style="font-weight:bold; color:white;">${c.name}</td>
+                        <td style="font-family:monospace;">${c.phone}</td>
+                        <td>
+                            <div class="stepper-control">
+                                <button class="stepper-btn" onclick="changeCustomerVisits(${idx}, -1)" title="کاهش">-</button>
+                                <span style="font-weight:800; min-width:24px; text-align:center; color:var(--neon-cyan);">${c.visits}</span>
+                                <button class="stepper-btn" onclick="changeCustomerVisits(${idx}, 1)" title="افزایش">+</button>
+                            </div>
+                        </td>
+                        <td style="color:var(--neon-amber); font-weight:bold;">${c.points} امتیاز</td>
+                        <td><span class="badge" style="background:${tierColor}22; color:${tierColor}; border:1px solid ${tierColor}55;">${tier}</span></td>
+                        <td>
+                            <div style="display:flex; gap:6px;">
+                                <button class="btn btn-secondary" style="padding:5px 10px;" onclick="openCustomerModal(${idx})" title="ویرایش"><i class="fa-solid fa-pen"></i></button>
+                                <button class="btn btn-danger" style="padding:5px 10px;" onclick="deleteCustomer(${idx})" title="حذف"><i class="fa-solid fa-trash"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('') || `<tr><td colspan="6" style="text-align:center; color:var(--text-muted); padding:20px;">مشتری ثبت‌نشده است.</td></tr>`;
+        };
+
+        window.changeCustomerVisits = function(idx, delta) {
+            if(customers[idx]) {
+                customers[idx].visits = Math.max(0, customers[idx].visits + delta);
+                customers[idx].points = Math.max(0, customers[idx].points + (delta * 50));
+                saveLocalData();
+                renderCustomers();
+                showToast(`تعداد مراجعات ${customers[idx].name} بروزرسانی شد.`);
+            }
+        };
+
+        window.openCustomerModal = function(idx = null) {
+            document.getElementById('customerForm').reset();
+            document.getElementById('editCustId').value = '';
+            if(idx !== null && customers[idx]) {
+                document.getElementById('custModalTitle').innerText = 'ویرایش اطلاعات مشتری';
+                document.getElementById('editCustId').value = idx;
+                document.getElementById('custName').value = customers[idx].name;
+                document.getElementById('custPhone').value = customers[idx].phone;
+                document.getElementById('custVisits').value = customers[idx].visits;
+                document.getElementById('custPoints').value = customers[idx].points;
+            } else {
+                document.getElementById('custModalTitle').innerText = 'ثبت مشتری در باشگاه وفاداری';
+            }
+            document.getElementById('customerModal').classList.add('active');
+        };
+
+        window.closeCustomerModal = function() { document.getElementById('customerModal').classList.remove('active'); };
+
+        window.saveCustomer = function(e) {
+            e.preventDefault();
+            const editIdx = document.getElementById('editCustId').value;
+            const name = document.getElementById('custName').value.trim();
+            const phone = document.getElementById('custPhone').value.trim();
+            const visits = Number(document.getElementById('custVisits').value) || 0;
+            const points = Number(document.getElementById('custPoints').value) || 0;
+
+            if(editIdx !== '') {
+                customers[Number(editIdx)] = { ...customers[Number(editIdx)], name, phone, visits, points };
+                showToast('اطلاعات مشتری با موفقیت ویرایش شد.');
+            } else {
+                customers.push({ id: Date.now().toString(), name, phone, visits, points });
+                showToast('مشتری جدید با موفقیت در باشگاه ثبت شد.');
+            }
+            saveLocalData();
+            closeCustomerModal();
+            renderCustomers();
+        };
+
+        window.deleteCustomer = function(idx) {
+            showCustomDialog({
+                title: 'حذف عضو باشگاه مشتریان',
+                message: `آیا از حذف «${customers[idx].name}» از باشگاه مشتریان اطمینان دارید؟`,
+                onConfirm: () => {
+                    customers.splice(idx, 1);
+                    saveLocalData();
+                    renderCustomers();
+                    showToast('مشتری با موفقیت حذف شد.', true);
+                }
+            });
+        };
+
+        window.renderIngredients = function() {
+            const tbody = document.getElementById('ingredientTableBody');
+            tbody.innerHTML = ingredients.map((ing, idx) => {
+                const isLow = ing.stock <= ing.minStock;
+                return `
+                    <tr>
+                        <td style="font-weight:bold; color:white;">${ing.name}</td>
+                        <td>
+                            <div class="stepper-control">
+                                <button class="stepper-btn" onclick="adjustStock(${idx}, -1)" title="کاهش">-</button>
+                                <span style="color:${isLow ? 'var(--neon-rose)' : 'var(--neon-green)'}; font-weight:bold; min-width:26px; text-align:center;">${ing.stock}</span>
+                                <button class="stepper-btn" onclick="adjustStock(${idx}, 1)" title="افزایش">+</button>
+                            </div>
+                        </td>
+                        <td>${ing.unit}</td>
+                        <td>${ing.minStock} ${ing.unit}</td>
+                        <td><span class="badge" style="background:${isLow ? 'rgba(244,63,94,0.15)' : 'rgba(16,185,129,0.15)'}; color:${isLow ? 'var(--neon-rose)' : 'var(--neon-green)'};">${isLow ? '⚠️ هشدار کسری' : 'مطلوب'}</span></td>
+                        <td>
+                            <div style="display:flex; gap:6px;">
+                                <button class="btn btn-secondary" style="padding:5px 10px;" onclick="openIngredientModal(${idx})" title="ویرایش"><i class="fa-solid fa-pen"></i></button>
+                                <button class="btn btn-danger" style="padding:5px 10px;" onclick="deleteIngredient(${idx})" title="حذف"><i class="fa-solid fa-trash"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('') || `<tr><td colspan="6" style="text-align:center; color:var(--text-muted); padding:20px;">ماده اولیه‌ای ثبت نشده است.</td></tr>`;
+        };
+
+        window.openIngredientModal = function(idx = null) {
+            document.getElementById('ingredientForm').reset();
+            document.getElementById('editIngId').value = '';
+            if(idx !== null && ingredients[idx]) {
+                document.getElementById('ingModalTitle').innerText = 'ویرایش ماده اولیه انبار';
+                document.getElementById('editIngId').value = idx;
+                document.getElementById('ingName').value = ingredients[idx].name;
+                document.getElementById('ingStock').value = ingredients[idx].stock;
+                document.getElementById('ingUnit').value = ingredients[idx].unit;
+                document.getElementById('ingMin').value = ingredients[idx].minStock;
+            } else {
+                document.getElementById('ingModalTitle').innerText = 'افزودن ماده اولیه جدید';
+            }
+            document.getElementById('ingredientModal').classList.add('active');
+        };
+
+        window.closeIngredientModal = function() { document.getElementById('ingredientModal').classList.remove('active'); };
+
+        window.saveIngredient = function(e) {
+            e.preventDefault();
+            const editIdx = document.getElementById('editIngId').value;
+            const name = document.getElementById('ingName').value.trim();
+            const stock = Number(document.getElementById('ingStock').value);
+            const unit = document.getElementById('ingUnit').value.trim();
+            const minStock = Number(document.getElementById('ingMin').value);
+
+            if(editIdx !== '') {
+                ingredients[Number(editIdx)] = { ...ingredients[Number(editIdx)], name, stock, unit, minStock };
+                showToast('ماده اولیه ویرایش شد.');
+            } else {
+                ingredients.push({ id: Date.now().toString(), name, stock, unit, minStock });
+                showToast('ماده اولیه جدید به انبار افزوده شد.');
+            }
+            saveLocalData();
+            closeIngredientModal();
+            renderIngredients();
+        };
+
+        window.adjustStock = function(idx, val) {
+            ingredients[idx].stock = Math.max(0, ingredients[idx].stock + val);
+            saveLocalData();
+            renderIngredients();
+            showToast('موجودی انبار بروزرسانی شد.');
+        };
+
+        window.deleteIngredient = function(idx) {
+            showCustomDialog({
+                title: 'حذف ماده اولیه از انبار',
+                message: `آیا از حذف «${ingredients[idx].name}» از انبار اطمینان دارید؟`,
+                onConfirm: () => {
+                    ingredients.splice(idx, 1);
+                    saveLocalData();
+                    renderIngredients();
+                    showToast('ماده اولیه حذف شد.', true);
+                }
+            });
+        };
+
+        window.autoFillFromInvoices = function() {
+            let posTotal = 0;
+            let cashTotal = 0;
+            invoices.forEach(inv => {
+                if(inv.payMethod === 'نقدی') cashTotal += inv.totalAmount;
+                else posTotal += inv.totalAmount;
+            });
+            document.getElementById('shiftPosSales').value = posTotal;
+            document.getElementById('shiftCashSales').value = cashTotal;
+            updateLiveShiftPreview();
+            showToast(`فراخوانی موفق: ${invoices.length} فاکتور بررسی شد.`);
+        };
+
+        window.updateLiveShiftPreview = function() {
+            const posSales = Number(document.getElementById('shiftPosSales').value) || 0;
+            const cashSales = Number(document.getElementById('shiftCashSales').value) || 0;
+            const actualCash = Number(document.getElementById('shiftActualCash').value) || 0;
+
+            const totalShiftSales = posSales + cashSales;
+            const discrepancy = actualCash - cashSales;
+
+            document.getElementById('prevCashSales').innerText = new Intl.NumberFormat('fa-IR').format(cashSales) + ' تومان';
+            document.getElementById('prevActualCash').innerText = new Intl.NumberFormat('fa-IR').format(actualCash) + ' تومان';
+            document.getElementById('prevPosSales').innerText = new Intl.NumberFormat('fa-IR').format(posSales) + ' تومان';
+            document.getElementById('prevTotalShiftSales').innerText = new Intl.NumberFormat('fa-IR').format(totalShiftSales) + ' تومان';
+
+            const banner = document.getElementById('discrepancyBanner');
+            const textEl = document.getElementById('prevDiscrepancyText');
+
+            if(discrepancy === 0) {
+                banner.style.background = 'rgba(16, 185, 129, 0.15)';
+                banner.style.borderColor = 'rgba(16, 185, 129, 0.4)';
+                textEl.style.color = 'var(--neon-green)';
+                textEl.innerText = '✅ صندوق کاملاً تراز است (بدون مغایرت نقدی)';
+            } else if(discrepancy > 0) {
+                banner.style.background = 'rgba(6, 182, 212, 0.15)';
+                banner.style.borderColor = 'rgba(6, 182, 212, 0.4)';
+                textEl.style.color = 'var(--neon-cyan)';
+                textEl.innerText = `➕ مازاد صندوق: ${new Intl.NumberFormat('fa-IR').format(discrepancy)} تومان`;
+            } else {
+                banner.style.background = 'rgba(244, 63, 94, 0.15)';
+                banner.style.borderColor = 'rgba(244, 63, 94, 0.4)';
+                textEl.style.color = 'var(--neon-rose)';
+                textEl.innerText = `⚠️ کسری صندوق: ${new Intl.NumberFormat('fa-IR').format(Math.abs(discrepancy))} تومان`;
+            }
+        };
+
+        window.renderShifts = function() {
+            const tbody = document.getElementById('shiftTableBody');
+            tbody.innerHTML = shifts.map((sh, idx) => {
+                let statusHtml = '';
+                if(sh.discrepancy === 0) {
+                    statusHtml = `<span class="badge" style="background:rgba(16,185,129,0.15); color:var(--neon-green);">تراز کامل</span>`;
+                } else if(sh.discrepancy > 0) {
+                    statusHtml = `<span class="badge" style="background:rgba(6,182,212,0.15); color:var(--neon-cyan);">مازاد: +${new Intl.NumberFormat('fa-IR').format(sh.discrepancy)}</span>`;
+                } else {
+                    statusHtml = `<span class="badge" style="background:rgba(244,63,94,0.15); color:var(--neon-rose);">کسری: ${new Intl.NumberFormat('fa-IR').format(sh.discrepancy)}</span>`;
+                }
+
+                const totalSales = sh.posSales + sh.cashSales;
+
+                return `
+                    <tr>
+                        <td>
+                            <strong style="display:block; color:white;">${sh.date}</strong>
+                            <span style="font-size:10px; color:var(--text-muted);">${sh.period}</span>
+                        </td>
+                        <td style="font-weight:bold; color:var(--neon-amber);">${sh.cashier}</td>
+                        <td>${new Intl.NumberFormat('fa-IR').format(sh.posSales)} تومان</td>
+                        <td>${new Intl.NumberFormat('fa-IR').format(sh.cashSales)} تومان</td>
+                        <td style="color:var(--neon-cyan); font-weight:bold;">${new Intl.NumberFormat('fa-IR').format(totalSales)} تومان</td>
+                        <td style="font-weight:bold;">${new Intl.NumberFormat('fa-IR').format(sh.actualCash)} تومان</td>
+                        <td>${statusHtml}</td>
+                        <td>
+                            <div style="display:flex; gap:6px;">
+                                <button class="btn btn-green" style="padding:5px 9px;" onclick="downloadShiftPDF(${idx})" title="دانلود PDF"><i class="fa-solid fa-file-pdf"></i></button>
+                                <button class="btn btn-secondary" style="padding:5px 9px;" onclick="editShift(${idx})" title="ویرایش"><i class="fa-solid fa-pen"></i></button>
+                                <button class="btn btn-danger" style="padding:5px 9px;" onclick="deleteShift(${idx})" title="حذف"><i class="fa-solid fa-trash"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('') || `<tr><td colspan="8" style="text-align:center; color:var(--text-muted); padding:20px;">هنوز شیفتی تسویه نشده است.</td></tr>`;
+        };
+
+        window.saveShift = function(e) {
+            e.preventDefault();
+            const editIdx = document.getElementById('editShiftId').value;
+            const cashier = document.getElementById('shiftCashier').value.trim();
+            const period = document.getElementById('shiftPeriod').value;
+            const posSales = Number(document.getElementById('shiftPosSales').value) || 0;
+            const cashSales = Number(document.getElementById('shiftCashSales').value) || 0;
+            const actualCash = Number(document.getElementById('shiftActualCash').value) || 0;
+            const notes = document.getElementById('shiftNotes').value.trim();
+
+            const discrepancy = actualCash - cashSales;
+
+            const shiftData = {
+                date: editIdx !== '' ? shifts[Number(editIdx)].date : new Date().toLocaleDateString('fa-IR') + ' - ' + new Date().toLocaleTimeString('fa-IR', {hour: '2-digit', minute:'2-digit'}),
+                cashier,
+                period,
+                posSales,
+                cashSales,
+                actualCash,
+                discrepancy,
+                notes
+            };
+
+            if(editIdx !== '') {
+                shifts[Number(editIdx)] = shiftData;
+                showToast('گزارش تسویه شیفت با موفقیت ویرایش شد.');
+            } else {
+                shifts.unshift(shiftData);
+                showToast('تسویه شیفت با موفقیت ثبت و بایگانی شد.');
+            }
+
+            saveLocalData();
+            resetShiftForm();
+            renderShifts();
+        };
+
+        window.editShift = function(idx) {
+            const sh = shifts[idx];
+            if(!sh) return;
+            document.getElementById('editShiftId').value = idx;
+            document.getElementById('shiftFormTitle').innerHTML = `<i class="fa-solid fa-pen"></i> ویرایش گزارش تسویه شیفت`;
+            document.getElementById('cancelShiftEditBtn').style.display = 'inline-flex';
+            document.getElementById('shiftSubmitBtn').innerHTML = `<i class="fa-solid fa-save"></i> ذخیره تغییرات شیفت`;
+
+            document.getElementById('shiftCashier').value = sh.cashier;
+            document.getElementById('shiftPeriod').value = sh.period;
+            document.getElementById('shiftPosSales').value = sh.posSales;
+            document.getElementById('shiftCashSales').value = sh.cashSales;
+            document.getElementById('shiftActualCash').value = sh.actualCash;
+            document.getElementById('shiftNotes').value = sh.notes || '';
+            updateLiveShiftPreview();
+        };
+
+        window.resetShiftForm = function() {
+            document.getElementById('shiftForm').reset();
+            document.getElementById('editShiftId').value = '';
+            document.getElementById('shiftFormTitle').innerHTML = `<i class="fa-solid fa-cash-register"></i> ثبت و تسویه شیفت (POS و نقدی)`;
+            document.getElementById('cancelShiftEditBtn').style.display = 'none';
+            document.getElementById('shiftSubmitBtn').innerHTML = `<i class="fa-solid fa-check-double"></i> ثبت و بستن شیفت`;
+            updateLiveShiftPreview();
+        };
+
+        window.deleteShift = function(idx) {
+            showCustomDialog({
+                title: 'حذف گزارش تسویه شیفت',
+                message: 'آیا از حذف این گزارش تسویه شیفت اطمینان دارید؟',
+                onConfirm: () => {
+                    shifts.splice(idx, 1);
+                    saveLocalData();
+                    renderShifts();
+                    showToast('گزارش شیفت حذف شد.', true);
+                }
+            });
+        };
+
+        window.downloadShiftPDF = function(idx) {
+            const sh = shifts[idx];
+            if(!sh) return;
+
+            const totalSales = sh.posSales + sh.cashSales;
+            const container = document.getElementById('hiddenShiftPrintContainer');
+            container.style.display = 'block';
+            container.innerHTML = `
+                <div style="background:#fff; color:#000; padding:24px; font-family:'Vazirmatn', sans-serif; direction:rtl;">
+                    <div style="border-bottom:2px solid #d97706; padding-bottom:12px; margin-bottom:16px; display:flex; justify-content:space-between; align-items:center;">
+                        <div>
+                            <h2 style="margin:0; font-size:20px; color:#0f172a;">کافه لاوین (Lavin Cafe)</h2>
+                            <p style="margin:4px 0 0 0; font-size:12px; color:#64748b;">برگه رسمی تسویه حساب صندوق شیفت</p>
+                        </div>
+                        <div style="text-align:left; font-size:12px;">
+                            <p><strong>تاریخ ثبت:</strong> ${sh.date}</p>
+                            <p><strong>نوبت:</strong> ${sh.period}</p>
+                        </div>
+                    </div>
+                    <table style="width:100%; border-collapse:collapse; margin-bottom:16px; font-size:13px;">
+                        <tr><td style="padding:8px; border:1px solid #cbd5e1; background:#f8fafc;"><strong>صندوق‌دار:</strong></td><td style="padding:8px; border:1px solid #cbd5e1;">${sh.cashier}</td></tr>
+                        <tr><td style="padding:8px; border:1px solid #cbd5e1; background:#f8fafc;"><strong>فروش کارتخوان (POS):</strong></td><td style="padding:8px; border:1px solid #cbd5e1;">${new Intl.NumberFormat('fa-IR').format(sh.posSales)} تومان</td></tr>
+                        <tr><td style="padding:8px; border:1px solid #cbd5e1; background:#f8fafc;"><strong>فروش نقدی سیستمی:</strong></td><td style="padding:8px; border:1px solid #cbd5e1;">${new Intl.NumberFormat('fa-IR').format(sh.cashSales)} تومان</td></tr>
+                        <tr><td style="padding:8px; border:1px solid #cbd5e1; background:#f8fafc;"><strong>مجموع کل فروش شیفت:</strong></td><td style="padding:8px; border:1px solid #cbd5e1; font-weight:bold;">${new Intl.NumberFormat('fa-IR').format(totalSales)} تومان</td></tr>
+                        <tr><td style="padding:8px; border:1px solid #cbd5e1; background:#f8fafc;"><strong>وجه نقد شمارش‌شده واقعی:</strong></td><td style="padding:8px; border:1px solid #cbd5e1; font-weight:bold;">${new Intl.NumberFormat('fa-IR').format(sh.actualCash)} تومان</td></tr>
+                        <tr><td style="padding:8px; border:1px solid #cbd5e1; background:#fffbeb;"><strong>مغایرت صندوق:</strong></td><td style="padding:8px; border:1px solid #cbd5e1; font-weight:bold;">${new Intl.NumberFormat('fa-IR').format(sh.discrepancy)} تومان</td></tr>
+                    </table>
+                    <p style="font-size:12px; color:#475569; margin-bottom:24px;"><strong>یادداشت:</strong> ${sh.notes || 'بدون یادداشت'}</p>
+                    <div style="display:flex; justify-content:space-between; margin-top:30px; font-size:12px; text-align:center;">
+                        <div style="width:180px;"><p style="margin-bottom:30px;">امضا صندوق‌دار</p><p>__________________</p></div>
+                        <div style="width:180px;"><p style="margin-bottom:30px;">تایید مدیریت کافه لاوین</p><p>__________________</p></div>
+                    </div>
+                </div>
+            `;
+
+            const opt = {
+                margin: 8,
+                filename: `LavinCafe_ShiftReport_${Date.now()}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            showToast('در حال صدور گزارش PDF تسویه شیفت...');
+            html2pdf().from(container).set(opt).save().then(() => {
+                container.style.display = 'none';
+            });
+        };
+
+        window.openInvoiceModal = function() {
+            document.getElementById('invDate').value = new Date().toLocaleDateString('fa-IR');
+            const select = document.getElementById('invSelectProduct');
+            select.innerHTML = products.map(p => `<option value="${p.id}">${p.name} | ${new Intl.NumberFormat('fa-IR').format(p.price)} تومان</option>`).join('');
+            currentInvoiceItems = [];
+            renderInvoiceItemsList();
+            renderInvoicePreview();
+            document.getElementById('invoiceModal').classList.add('active');
+        };
+
+        window.closeInvoiceModal = function() { document.getElementById('invoiceModal').classList.remove('active'); };
+
+        window.addInvoiceItem = function() {
+            const id = document.getElementById('invSelectProduct').value;
+            const qty = Number(document.getElementById('invAddQty').value) || 1;
+            const item = products.find(p => p.id === id);
+            if(!item) return;
+
+            const existing = currentInvoiceItems.find(i => i.id === id);
+            if(existing) existing.qty += qty;
+            else currentInvoiceItems.push({ ...item, qty });
+
+            renderInvoiceItemsList();
+            renderInvoicePreview();
+        };
+
+        window.removeInvoiceItem = function(idx) {
+            currentInvoiceItems.splice(idx, 1);
+            renderInvoiceItemsList();
+            renderInvoicePreview();
+        };
+
+        window.renderInvoiceItemsList = function() {
+            const tbody = document.getElementById('invCurrentItemsBody');
+            tbody.innerHTML = currentInvoiceItems.map((item, idx) => `
+                <tr>
+                    <td>${item.name}</td>
+                    <td>${item.qty}</td>
+                    <td>${new Intl.NumberFormat('fa-IR').format(item.price)}</td>
+                    <td style="color:var(--neon-amber); font-weight:bold;">${new Intl.NumberFormat('fa-IR').format(item.price * item.qty)}</td>
+                    <td><button class="btn btn-danger" style="padding:2px 6px;" onclick="removeInvoiceItem(${idx})"><i class="fa-solid fa-trash"></i></button></td>
+                </tr>
+            `).join('') || `<tr><td colspan="5" style="text-align:center; color:var(--text-muted);">هیچ آیتمی اضافه نشده است.</td></tr>`;
+        };
+
+        window.renderInvoicePreview = function() {
+            const tableNum = document.getElementById('invTableNum').value;
+            const dateStr = document.getElementById('invDate').value;
+            const payMethod = document.getElementById('invPayMethod').value;
+            const total = currentInvoiceItems.reduce((acc, item) => acc + (item.price * item.qty), 0);
+
+            let rowsHtml = currentInvoiceItems.map((item, i) => `
+                <tr style="border-bottom:1px solid #ddd; text-align:center; font-size:12px;">
+                    <td style="padding:6px; border:1px solid #ccc;">${i+1}</td>
+                    <td style="padding:6px; border:1px solid #ccc; text-align:right;">${item.name}</td>
+                    <td style="padding:6px; border:1px solid #ccc;">${item.qty}</td>
+                    <td style="padding:6px; border:1px solid #ccc;">${new Intl.NumberFormat('fa-IR').format(item.price)}</td>
+                    <td style="padding:6px; border:1px solid #ccc; font-weight:bold;">${new Intl.NumberFormat('fa-IR').format(item.price * item.qty)}</td>
+                </tr>
+            `).join('');
+
+            document.getElementById('printableInvoiceArea').innerHTML = `
+                <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #d97706; padding-bottom:10px; margin-bottom:12px;">
+                    <div>
+                        <h2 style="margin:0; color:#000; font-size:18px;">کافه لاوین (Lavin Cafe)</h2>
+                        <p style="margin:2px 0 0 0; font-size:10px; color:#555;">فاکتور فروش رسمی سرویس کافه</p>
+                    </div>
+                    <div style="text-align:left; font-size:11px; color:#333;">
+                        <p style="margin:0;"><strong>تاریخ:</strong> ${dateStr}</p>
+                        <p style="margin:2px 0 0 0;"><strong>شماره/میز:</strong> ${tableNum}</p>
+                    </div>
+                </div>
+
+                <table style="width:100%; border-collapse:collapse; margin-bottom:12px;">
+                    <thead>
+                        <tr style="background:#f3f4f6; font-size:11px;">
+                            <th style="padding:6px; border:1px solid #ccc;">#</th>
+                            <th style="padding:6px; border:1px solid #ccc; text-align:right;">نام آیتم</th>
+                            <th style="padding:6px; border:1px solid #ccc;">تعداد</th>
+                            <th style="padding:6px; border:1px solid #ccc;">قیمت واحد</th>
+                            <th style="padding:6px; border:1px solid #ccc;">مبلغ کل</th>
+                        </tr>
+                    </thead>
+                    <tbody>${rowsHtml || '<tr><td colspan="5" style="text-align:center; padding:10px;">آیتمی انتخاب نشده است</td></tr>'}</tbody>
+                </table>
+
+                <div style="display:flex; justify-content:space-between; align-items:center; font-size:12px; font-weight:bold; background:#fffbeb; padding:8px 12px; border-radius:6px; border:1px solid #fde68a;">
+                    <span>پرداخت: ${payMethod}</span>
+                    <span>مبلغ قابل پرداخت: ${new Intl.NumberFormat('fa-IR').format(total)} تومان</span>
+                </div>
+            `;
+        };
+
+        window.saveAndDownloadInvoicePDF = function() {
+            if(currentInvoiceItems.length === 0) {
+                showCustomDialog({
+                    title: 'فاکتور خالی است',
+                    message: 'لطفاً ابتدا حداقل یک آیتم به فاکتور اضافه کنید.',
+                    confirmText: 'متوجه شدم',
+                    isAlertOnly: true
+                });
+                return;
+            }
+
+            const total = currentInvoiceItems.reduce((acc, item) => acc + (item.price * item.qty), 0);
+            const invObj = {
+                id: 'LV-' + Math.floor(1000 + Math.random() * 9000),
+                table: document.getElementById('invTableNum').value,
+                date: document.getElementById('invDate').value,
+                payMethod: document.getElementById('invPayMethod').value,
+                totalAmount: total,
+                items: [...currentInvoiceItems]
+            };
+
+            invoices.unshift(invObj);
+            saveLocalData();
+
+            const element = document.getElementById('printableInvoiceArea');
+            const opt = {
+                margin:       5,
+                filename:     `LavinCafe_Invoice_${invObj.id}.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2 },
+                jsPDF:        { unit: 'mm', format: 'a5', orientation: 'portrait' }
+            };
+
+            showToast('فاکتور ثبت و فایل PDF دانلود شد.');
+            html2pdf().from(element).set(opt).save().then(() => {
+                closeInvoiceModal();
+                renderAdminTable();
+            });
+        };
+
+        window.renderInvoiceHistory = function() {
+            const tbody = document.getElementById('invoiceTableBody');
+            tbody.innerHTML = invoices.map((inv, idx) => `
+                <tr>
+                    <td style="font-weight:bold; color:var(--neon-amber);">${inv.id}</td>
+                    <td>${inv.table}</td>
+                    <td>${inv.date}</td>
+                    <td style="color:var(--neon-green); font-weight:bold;">${new Intl.NumberFormat('fa-IR').format(inv.totalAmount)} تومان</td>
+                    <td>${inv.payMethod}</td>
+                    <td>
+                        <button class="btn btn-danger" style="padding:4px 8px;" onclick="deleteInvoice(${idx})" title="حذف فاکتور"><i class="fa-solid fa-trash"></i></button>
+                    </td>
+                </tr>
+            `).join('') || `<tr><td colspan="6" style="text-align:center; color:var(--text-muted); padding:20px;">هنوز فاکتوری ثبت نشده است.</td></tr>`;
+        };
+
+        window.deleteInvoice = function(idx) {
+            showCustomDialog({
+                title: 'حذف فاکتور فروش',
+                message: `آیا از حذف فاکتور شماره «${invoices[idx].id}» اطمینان دارید؟`,
+                onConfirm: () => {
+                    invoices.splice(idx, 1);
+                    saveLocalData();
+                    renderInvoiceHistory();
+                    renderAdminTable();
+                    showToast('فاکتور با موفقیت حذف شد.', true);
+                }
+            });
+        };
+
+        // PRODUCT MODAL & CRUD (SYNCED WITH SUPABASE - FIXED DATA TYPES)
+        window.openProductModal = function(id = null) {
+            document.getElementById('productForm').reset();
+            document.getElementById('editId').value = '';
+            document.getElementById('pCategory').innerHTML = categories.map(c => `<option value="${c}">${c}</option>`).join('');
+
+            if(id) {
+                const item = products.find(p => String(p.id) === String(id));
+                if(item) {
+                    document.getElementById('modalTitle').innerText = 'ویرایش آیتم منو';
+                    document.getElementById('editId').value = item.id;
+                    document.getElementById('pName').value = item.name;
+                    document.getElementById('pCategory').value = item.category;
+                    document.getElementById('pCost').value = item.cost || 0;
+                    document.getElementById('pPrice').value = item.price;
+                    document.getElementById('pStatus').value = item.status;
+                    document.getElementById('pDesc').value = item.desc || '';
+                }
+            } else {
+                document.getElementById('modalTitle').innerText = 'ثبت آیتم جدید به منوی کافه لاوین';
+            }
+            document.getElementById('productModal').classList.add('active');
+        };
+
+        window.closeProductModal = function() { document.getElementById('productModal').classList.remove('active'); };
+
+        window.saveProduct = async function(e) {
+            e.preventDefault();
+            const rawId = document.getElementById('editId').value;
+            const stringId = rawId ? String(rawId) : String(Date.now());
+            const newObj = {
+                id: stringId,
+                name: document.getElementById('pName').value.trim(),
+                category: document.getElementById('pCategory').value,
+                cost: Number(document.getElementById('pCost').value) || 0,
+                price: Number(document.getElementById('pPrice').value) || 0,
+                status: document.getElementById('pStatus').value,
+                desc: document.getElementById('pDesc').value.trim()
+            };
+
+            if(rawId) {
+                products = products.map(p => String(p.id) === String(rawId) ? newObj : p);
+            } else {
+                products.push(newObj);
+            }
+
+            saveLocalData();
+            closeProductModal();
+            renderAdminTable();
+
+            // ذخیره آنی در جدول cafe_lavin در Supabase با تطابق کامل نوع داده
+            const dbPayload = {
+                id: stringId,
+                name: newObj.name,
+                category: newObj.category,
+                cost: newObj.cost,
+                price: newObj.price,
+                status: newObj.status,
+                desc: newObj.desc
+            };
+
+            const { error } = await supabase.from('cafe_lavin').upsert([dbPayload]);
+            if (!error) {
+                showToast(rawId ? 'آیتم در Supabase و منوی مشتری بروزرسانی شد.' : 'آیتم جدید در Supabase ثبت و به مشتری ارسال شد.');
+            } else {
+                console.error('Supabase upsert error:', error);
+                showToast('ذخیره محلی انجام شد اما خطای Supabase رخ داد.', true);
+            }
+        };
+
+        window.deleteProduct = function(id) {
+            const item = products.find(p => String(p.id) === String(id));
+            showCustomDialog({
+                title: 'حذف آیتم از منو',
+                message: `آیا از حذف «${item ? item.name : 'این آیتم'}» از منو اطمینان دارید؟`,
+                onConfirm: async () => {
+                    products = products.filter(p => String(p.id) !== String(id));
+                    saveLocalData();
+                    renderAdminTable();
+
+                    const { error } = await supabase.from('cafe_lavin').delete().eq('id', String(id));
+                    if (!error) {
+                        showToast('آیتم از Supabase و منوی مشتری حذف شد.', true);
+                    } else {
+                        console.error('Supabase delete error:', error);
+                        showToast('خطا در حذف از Supabase', true);
+                    }
+                }
+            });
+        };
+
+        window.openCategoriesModal = function() { renderCatList(); document.getElementById('categoriesModal').classList.add('active'); };
+        window.closeCategoriesModal = function() { document.getElementById('categoriesModal').classList.remove('active'); };
+        window.renderCatList = function() {
+            document.getElementById('catList').innerHTML = categories.map((c, i) => `
+                <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.04); padding:8px 12px; border-radius:10px; font-size:12px;">
+                    <span>${c}</span>
+                    <button class="btn btn-danger" style="padding:2px 8px; font-size:10px;" onclick="removeCategory(${i})"><i class="fa-solid fa-trash"></i></button>
+                </div>
+            `).join('');
+        };
+
+        window.addCategory = function() {
+            const val = document.getElementById('newCatInput').value.trim();
+            if(val && !categories.includes(val)) {
+                categories.push(val);
+                document.getElementById('newCatInput').value = '';
+                saveLocalData();
+                renderCatList();
+                showToast('دسته‌بندی جدید افزوده شد.');
+            }
+        };
+
+        window.removeCategory = function(index) {
+            categories.splice(index, 1);
+            saveLocalData();
+            renderCatList();
+            showToast('دسته‌بندی حذف شد.', true);
+        };
+
+        window.openQrModal = function() { document.getElementById('qrModal').classList.add('active'); };
+        window.closeQrModal = function() { document.getElementById('qrModal').classList.remove('active'); };
+
+        window.generateQrLink = function() {
+            const num = document.getElementById('tableInput').value;
+            const baseUrl = window.location.href.replace('admin.html', 'index.html');
+            const finalLink = `${baseUrl}?table=${num}`;
+            document.getElementById('qrOutputBox').innerHTML = `
+                <p style="font-size:11px; color:var(--text-muted); margin-bottom:6px;">لینک اختصاصی میز شماره ${num}:</p>
+                <input type="text" class="form-control" style="font-size:11px; font-family:monospace; text-align:center;" value="${finalLink}" readonly onclick="this.select()">
+                <p style="font-size:11px; color:var(--neon-green); margin-top:8px;"><i class="fa-solid fa-check-circle"></i> آماده برای پرینت روی میز</p>
+            `;
+            showToast('لینک QR کد تولید شد.');
+        };
+
+        renderAdminTable();
+        updateLiveShiftPreview();
+        loadProductsFromSupabase();
+    </script>
+</body>
+</html>
